@@ -3,15 +3,10 @@ use std::io;
 fn main() {
     let mut buffer = String::new();
     io::stdin().read_line(&mut buffer).unwrap();
-    let b_c: Vec<u32> = buffer
-        .split_whitespace()
-        .map(|c| c.parse().unwrap())
-        .collect();
-    let b = b_c[0];
-    let c = b_c[1];
-    if b * c % 2 == 0 {
-        println!("Even");
-    } else {
-        println!("Odd");
-    }
+    let s: u32 = buffer.trim().parse().unwrap();
+    let s3 = s % 10;
+    let s2 = (s % 100 - s3) / 10;
+    let s1 = (s - 10 * s2 - s3) / 100;
+    let sum = s1 + s2 + s3;
+    println!("{}", sum);
 }
