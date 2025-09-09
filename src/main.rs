@@ -3,27 +3,40 @@ use std::io;
 fn main() {
     let mut buffer = String::new();
     io::stdin().read_line(&mut buffer).unwrap();
-    let a: u32 = buffer.trim().parse().unwrap();
-    buffer.clear();
-    io::stdin().read_line(&mut buffer).unwrap();
-    let b: u32 = buffer.trim().parse().unwrap();
-    buffer.clear();
-    io::stdin().read_line(&mut buffer).unwrap();
-    let c: u32 = buffer.trim().parse().unwrap();
-    buffer.clear();
-    io::stdin().read_line(&mut buffer).unwrap();
-    let x: u32 = buffer.trim().parse().unwrap();
-    buffer.clear();
-    let mut count = 0;
-    for a_count in 0..(a + 1) {
-        for b_count in 0..(b + 1) {
-            for c_count in 0..(c + 1) {
-                let total = a_count * 500 + b_count * 100 + c_count * 50;
-                if total == x {
-                    count += 1;
-                }
-            }
+    let conds: Vec<u32> = buffer
+        .trim()
+        .split_whitespace()
+        .map(|num| num.parse().unwrap())
+        .collect();
+    let n = conds[0];
+    let a = conds[1];
+    let b = conds[2];
+    let mut total = 0;
+    for num in 1..(n + 1) {
+        if a <= sum_digits(num) && sum_digits(num) <= b {
+            total += num;
         }
     }
-    println!("{}", count);
+    println!("{total}");
+}
+
+fn sum_digits(x: u32) -> u32 {
+    let mut sum = 0;
+    let mut y = x;
+    while y != 0 {
+        let digit = y - (y / 10) * 10;
+        sum += digit;
+        y = y / 10;
+    }
+    return sum;
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn check_sum_digits() {
+        assert_eq!(6, sum_digits(123));
+        assert_eq!(8, sum_digits(2222));
+    }
 }
