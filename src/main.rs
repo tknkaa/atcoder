@@ -3,22 +3,26 @@ use std::io;
 fn main() {
     let mut buffer = String::new();
     io::stdin().read_line(&mut buffer).unwrap();
-    let combi: Vec<u32> = buffer
-        .trim()
-        .split_whitespace()
-        .map(|num| num.parse().unwrap())
-        .collect();
-    let n = combi[0];
-    let y = combi[1];
-    for i in 0..(n + 1) {
-        for j in 0..(n + 1 - i) {
-            let k = n - i - j;
-            let total = 10000 * i + 5000 * j + 1000 * k;
-            if total == y {
-                println!("{} {} {}", i, j, k);
+    let s = buffer.trim();
+    let mut s: String = s.chars().rev().collect();
+    let candidates = ["maerd", "remaerd", "esare", "resare"];
+    loop {
+        let mut count = 0;
+        for candidate in candidates {
+            if s.starts_with(candidate) {
+                s = s[candidate.len()..].to_string();
+                break;
+            } else {
+                count += 1;
+            }
+            if count == 4 {
+                println!("NO");
                 return;
             }
         }
+        if s.len() == 0 {
+            break;
+        }
     }
-    println!("-1 -1 -1");
+    println!("YES")
 }
