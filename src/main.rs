@@ -3,30 +3,27 @@ use std::io;
 fn main() {
     let mut buffer = String::new();
     io::stdin().read_line(&mut buffer).unwrap();
+    let a: u32 = buffer.trim().parse().unwrap();
     buffer.clear();
     io::stdin().read_line(&mut buffer).unwrap();
-    let mut a: Vec<u32> = buffer
-        .trim()
-        .split_whitespace()
-        .map(|num| num.parse().unwrap())
-        .collect();
+    let b: u32 = buffer.trim().parse().unwrap();
+    buffer.clear();
+    io::stdin().read_line(&mut buffer).unwrap();
+    let c: u32 = buffer.trim().parse().unwrap();
+    buffer.clear();
+    io::stdin().read_line(&mut buffer).unwrap();
+    let x: u32 = buffer.trim().parse().unwrap();
+    buffer.clear();
     let mut count = 0;
-    while judge_and_divide(&a) != Err(()) {
-        a = judge_and_divide(&a).unwrap();
-        count += 1;
-    }
-    println!("{}", count);
-}
-
-fn judge_and_divide(nums: &Vec<u32>) -> Result<Vec<u32>, ()> {
-    let mut divided: Vec<u32> = Vec::new();
-    for num in nums {
-        if num % 2 == 0 {
-            let divided_ref = &mut divided;
-            divided_ref.push(num / 2);
-        } else {
-            return Err(());
+    for a_count in 0..(a + 1) {
+        for b_count in 0..(b + 1) {
+            for c_count in 0..(c + 1) {
+                let total = a_count * 500 + b_count * 100 + c_count * 50;
+                if total == x {
+                    count += 1;
+                }
+            }
         }
     }
-    return Ok(divided);
+    println!("{}", count);
 }
