@@ -3,40 +3,25 @@ use std::io;
 fn main() {
     let mut buffer = String::new();
     io::stdin().read_line(&mut buffer).unwrap();
-    let conds: Vec<u32> = buffer
+    buffer.clear();
+    io::stdin().read_line(&mut buffer).unwrap();
+    let mut cards: Vec<u32> = buffer
         .trim()
         .split_whitespace()
-        .map(|num| num.parse().unwrap())
+        .map(|card| card.parse().unwrap())
         .collect();
-    let n = conds[0];
-    let a = conds[1];
-    let b = conds[2];
-    let mut total = 0;
-    for num in 1..(n + 1) {
-        if a <= sum_digits(num) && sum_digits(num) <= b {
-            total += num;
+    cards.sort();
+    let mut alice_score = 0;
+    let mut bob_score = 0;
+    let mut turn = 0;
+    while cards.len() > 0 {
+        if turn % 2 == 0 {
+            alice_score += cards.pop().unwrap();
+        } else {
+            bob_score += cards.pop().unwrap();
         }
+        turn += 1;
     }
-    println!("{total}");
-}
-
-fn sum_digits(x: u32) -> u32 {
-    let mut sum = 0;
-    let mut y = x;
-    while y != 0 {
-        let digit = y - (y / 10) * 10;
-        sum += digit;
-        y = y / 10;
-    }
-    return sum;
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-    #[test]
-    fn check_sum_digits() {
-        assert_eq!(6, sum_digits(123));
-        assert_eq!(8, sum_digits(2222));
-    }
+    let ans = alice_score - bob_score;
+    println!("{ans}");
 }
