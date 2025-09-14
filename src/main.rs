@@ -32,26 +32,25 @@ fn divide_k_plus_one_pieces_longer_than_m(a: &Vec<u32>, l: u32, k: u32, m: u32) 
             tmp = *a_i;
             count += 1;
         }
+        if count == k {
+            return l - tmp >= m;
+        }
     }
-    if count >= k + 1 && l - tmp >= m {
-        true
-    } else {
-        false
-    }
+    false
 }
 
 fn search_score(a: &Vec<u32>, l: u32, k: u32) -> u32 {
-    let mut start = 0;
-    let mut end = l;
-    while start <= end {
-        println!("{start} {end}");
-        let mid = (end - start) / 2;
-        println!("{}", divide_k_plus_one_pieces_longer_than_m(a, l, k, mid));
-        if divide_k_plus_one_pieces_longer_than_m(a, l, k, mid) {
-            start = mid;
+    let mut left = 0;
+    let mut right = a.len();
+    while right - left > 1 {
+        let mid = (left + right) / 2;
+        let mid_len = *a.get(mid).unwrap();
+        if !divide_k_plus_one_pieces_longer_than_m(a, l, k, mid_len) {
+            left = mid;
         } else {
-            end = mid;
+            right = mid;
         }
     }
-    start
+    let ans = a.get(right).unwrap().to_owned();
+    ans
 }
