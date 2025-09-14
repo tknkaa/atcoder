@@ -40,17 +40,15 @@ fn divide_k_plus_one_pieces_longer_than_m(a: &Vec<u32>, l: u32, k: u32, m: u32) 
 }
 
 fn search_score(a: &Vec<u32>, l: u32, k: u32) -> u32 {
-    let mut left = 0;
-    let mut right = a.len();
+    let mut left: i32 = -1;
+    let mut right = (l + 1) as i32;
     while right - left > 1 {
         let mid = (left + right) / 2;
-        let mid_len = *a.get(mid).unwrap();
-        if !divide_k_plus_one_pieces_longer_than_m(a, l, k, mid_len) {
+        if divide_k_plus_one_pieces_longer_than_m(a, l, k, mid as u32) {
             left = mid;
         } else {
             right = mid;
         }
     }
-    let ans = a.get(right).unwrap().to_owned();
-    ans
+    left as u32
 }
