@@ -27,15 +27,16 @@ fn main() {
     }
 
     let min_dists_from_one = min_dists(1, &roads, n);
-    let (farthest_vertex, _farthest_dist) = min_dists_from_one
+    let (farthest_vertex, _) = min_dists_from_one
         .iter()
         .enumerate()
         .max_by_key(|&(i, &val)| if i == 0 { 0 } else { val })
         .unwrap();
-    let (_, tree_diameter) = min_dists(farthest_vertex as u32, &roads, n)
-        .into_iter()
+    let min_dists_from_the_farthest = min_dists(farthest_vertex as u32, &roads, n);
+    let (_, tree_diameter) = min_dists_from_the_farthest
+        .iter()
         .enumerate()
-        .max_by_key(|&(i, val)| if i == 0 { 0 } else { val })
+        .max_by_key(|&(i, &val)| if i == 0 { 0 } else { val })
         .unwrap();
     println!("{}", tree_diameter + 1);
 }
@@ -53,12 +54,7 @@ fn min_dists(v: u32, roads: &Vec<Road>, n: u32) -> Vec<u32> {
         q.insert(i);
     }
 
-    let mut count = 0;
     while q.len() >= 1 {
-        count += 1;
-        if count == 5 {
-            break;
-        }
         // Index 0 is not mapped to any city.
         let mut nearest_city = 0;
         for city in &q {
