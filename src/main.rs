@@ -3,52 +3,50 @@ use std::io;
 fn main() {
     let mut buffer = String::new();
     io::stdin().read_line(&mut buffer).unwrap();
-    let n_l: Vec<u32> = buffer
-        .trim()
-        .split_whitespace()
-        .map(|num| num.parse().unwrap())
-        .collect();
-    let _n = *n_l.get(0).unwrap();
-    let l = *n_l.get(1).unwrap();
-    buffer.clear();
-    io::stdin().read_line(&mut buffer).unwrap();
-    let k: u32 = buffer.trim().parse().unwrap();
-    buffer.clear();
-    io::stdin().read_line(&mut buffer).unwrap();
-    let a: Vec<u32> = buffer
-        .trim()
-        .split_whitespace()
-        .map(|num| num.parse().unwrap())
-        .collect();
-    let score = search_score(&a, l, k);
-    println!("{score}");
-}
-
-fn divide_k_plus_one_pieces_longer_than_m(a: &Vec<u32>, l: u32, k: u32, m: u32) -> bool {
-    let mut tmp: u32 = 0;
-    let mut count: u32 = 0;
-    for a_i in a {
-        if a_i - tmp >= m {
-            tmp = *a_i;
-            count += 1;
-        }
-        if count == k {
-            return l - tmp >= m;
+    let length: u32 = buffer.trim().parse().unwrap();
+    let patterns = (2 as u32).pow(length);
+    for i in 0..patterns {
+        let exp = binary_expression(i, length);
+        if validate_binary(&exp) {
+            print_par(&exp);
         }
     }
-    false
 }
 
-fn search_score(a: &Vec<u32>, l: u32, k: u32) -> u32 {
-    let mut left: i32 = -1;
-    let mut right = (l + 1) as i32;
-    while right - left > 1 {
-        let mid = (left + right) / 2;
-        if divide_k_plus_one_pieces_longer_than_m(a, l, k, mid as u32) {
-            left = mid;
+fn binary_expression(mut n: u32, length: u32) -> Vec<u32> {
+    let mut exp = vec![0; length as usize];
+    for i in 0..length {
+        let remainder = n % 2;
+        exp[(length - 1 - i) as usize] = remainder;
+        n = n / 2;
+    }
+    exp
+}
+
+fn validate_binary(bin: &Vec<u32>) -> bool {
+    let count_0 = bin.iter().filter(|&n| *n == 0).count();
+    let count_1 = bin.iter().filter(|&n| *n == 1).count();
+    if count_0 != count_1 {
+        return false;
+    }
+    let mut tmp_count_0 = 0;
+    let mut tmp_count_1 = 0;
+    for item in bin {
+        if *item == 0 {
+            tmp_count_0 += 1;
         } else {
-            right = mid;
+            tmp_count_1 += 1;
+        }
+        if tmp_count_0 < tmp_count_1 {
+            return false;
         }
     }
-    left as u32
+    return true;
+}
+
+fn print_par(bin: &Vec<u32>) {
+    for item in bin {
+        if *item == 0 { print!("(") } else { print!(")") }
+    }
+    print!("\n");
 }
