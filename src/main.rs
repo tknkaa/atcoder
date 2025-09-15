@@ -3,50 +3,41 @@ use std::io;
 fn main() {
     let mut buffer = String::new();
     io::stdin().read_line(&mut buffer).unwrap();
-    let length: u32 = buffer.trim().parse().unwrap();
-    let patterns = (2 as u32).pow(length);
-    for i in 0..patterns {
-        let exp = binary_expression(i, length);
-        if validate_binary(&exp) {
-            print_par(&exp);
-        }
+    let n: u32 = buffer.trim().parse().unwrap();
+    buffer.clear();
+    let mut roads: Vec<Vec<u32>> = Vec::new();
+    for _i in 0..n {
+        io::stdin().read_line(&mut buffer).unwrap();
+        let road: Vec<u32> = buffer
+            .trim()
+            .split_whitespace()
+            .map(|num| num.parse().unwrap())
+            .collect();
+        roads.push(road);
     }
+    let u = min_dists(1, &roads, n)
+        .into_iter()
+        .max_by_key(|&val| val)
+        .unwrap()
+        .to_owned();
+    let tree_diameter = min_dists(u as u32, &roads, n).into_iter().max().unwrap();
+    println!("{}", tree_diameter + 1);
 }
 
-fn binary_expression(mut n: u32, length: u32) -> Vec<u32> {
-    let mut exp = vec![0; length as usize];
-    for i in 0..length {
-        let remainder = n % 2;
-        exp[(length - 1 - i) as usize] = remainder;
-        n = n / 2;
-    }
-    exp
-}
-
-fn validate_binary(bin: &Vec<u32>) -> bool {
-    let count_0 = bin.iter().filter(|&n| *n == 0).count();
-    let count_1 = bin.iter().filter(|&n| *n == 1).count();
-    if count_0 != count_1 {
-        return false;
-    }
-    let mut tmp_count_0 = 0;
-    let mut tmp_count_1 = 0;
-    for item in bin {
-        if *item == 0 {
-            tmp_count_0 += 1;
-        } else {
-            tmp_count_1 += 1;
+fn min_dists(v: u32, roads: &Vec<Vec<u32>>, n: u32) -> Vec<u32> {
+    let mut min_dists = vec![u32::MAX; n as usize];
+    min_dists[v as usize] = 0;
+    for v in 0..n {
+        for road in roads {
+            let start = road[0];
+            let end = road[1];
+            if min_dists[start as usize] + 1 < min_dists[end as usize] {
+                min_dists[end as usize] = min_dists[start as usize] + 1;
+            }
         }
-        if tmp_count_0 < tmp_count_1 {
-            return false;
+        if v == n - 1 {
+            break;
         }
     }
-    return true;
-}
-
-fn print_par(bin: &Vec<u32>) {
-    for item in bin {
-        if *item == 0 { print!("(") } else { print!(")") }
-    }
-    print!("\n");
+    min_dists
 }
