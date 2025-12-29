@@ -15,22 +15,43 @@ func main() {
 		v, _ := strconv.Atoi(scanner.Text())
 		return v
 	}
-	d := next()
-	n := next()
-	diff := make([]int, d+2)
-	for i := 0; i < n; i++ {
-		l := next()
-		r := next()
-		diff[l] += 1
-		diff[r+1] -= 1
+	h := next()
+	w := next()
+	field := make([][]int, h+1)
+	for i := 1; i <= h; i++ {
+		field[i] = make([]int, w+1)
+		for j := 1; j <= w; j++ {
+			field[i][j] = next()
+		}
 	}
-	sum := make([]int, d+2)
-	for i := 1; i <= d; i++ {
-		sum[i] = sum[i-1] + diff[i]
+
+	sum0 := make([][]int, h+1)
+	for i := 1; i <= h; i++ {
+		sum0[i] = make([]int, w+1)
+		for j := 1; j <= w; j++ {
+			sum0[i][j] = sum0[i][j-1] + field[i][j]
+		}
+	}
+
+	sum1 := make([][]int, h+1)
+	for i := 0; i <= h; i++ {
+		sum1[i] = make([]int, w+1)
+	}
+	for i := 1; i <= h; i++ {
+		for j := 1; j <= w; j++ {
+			sum1[i][j] = sum1[i-1][j] + sum0[i][j]
+		}
 	}
 	out := bufio.NewWriter(os.Stdout)
 	defer out.Flush()
-	for i := 1; i <= d; i++ {
-		fmt.Fprintln(out, sum[i])
+
+	q := next()
+	for _ = range q {
+		a := next()
+		b := next()
+		c := next()
+		d := next()
+		sum := sum1[c][d] - sum1[c][b-1] - sum1[a-1][d] + sum1[a-1][b-1]
+		fmt.Fprintln(out, sum)
 	}
 }
