@@ -1,16 +1,37 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+)
 
 func main() {
-	var n int
-	fmt.Scanf("%d", &n)
-	for i := 9; i >= 0; i-- {
-		if (n>>i)&1 == 1 {
-			fmt.Print(1)
-		} else {
-			fmt.Print(0)
-		}
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Split(bufio.ScanWords)
+
+	next := func() int {
+		scanner.Scan()
+		v, _ := strconv.Atoi(scanner.Text())
+		return v
 	}
-	fmt.Print("\n")
+
+	n := next()
+	q := next()
+
+	sum := make([]int, n+1)
+	for i := 1; i <= n; i++ {
+		val := next()
+		sum[i] = sum[i-1] + val
+	}
+
+	out := bufio.NewWriter(os.Stdout)
+	defer out.Flush()
+
+	for i := 0; i < q; i++ {
+		l := next()
+		r := next()
+		fmt.Fprintln(out, sum[r]-sum[l-1])
+	}
 }
