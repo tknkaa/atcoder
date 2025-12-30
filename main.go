@@ -7,8 +7,12 @@ import (
 	"strconv"
 )
 
-func question(a, x int) bool {
-	return a >= x
+func question(a []int, t int, k int, n int) bool {
+	sum := 0
+	for i := 1; i <= n; i++ {
+		sum += t / a[i]
+	}
+	return sum >= k
 }
 
 func main() {
@@ -19,16 +23,16 @@ func main() {
 		v, _ := strconv.Atoi(scanner.Text())
 		return v
 	}
-	n, x := next(), next()
+	n, k := next(), next()
 	a := make([]int, n+1)
 	for i := 1; i <= n; i++ {
 		a[i] = next()
 	}
-	left := -1
-	right := n
+	left := 1
+	right := 1000000000
 	for right-left > 1 {
 		mid := (left + right) / 2
-		if question(a[mid], x) {
+		if question(a, mid, k, n) {
 			right = mid
 		} else {
 			left = mid
