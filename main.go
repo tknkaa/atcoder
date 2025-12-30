@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 )
 
@@ -17,29 +18,41 @@ func main() {
 	}
 	n, k := next(), next()
 	a := make([]int, n+1)
-	for i := 1; i <= n; i++ {
+	b := make([]int, n+1)
+	c := make([]int, n+1)
+	d := make([]int, n+1)
+	for i := range n {
 		a[i] = next()
 	}
 
-	r := make([]int, n+1)
-	sum := 0
-	for i := 1; i <= n-1; i++ {
-		if i == 1 {
-			r[i] = 1
-		} else {
-			r[i] = r[i-1]
-		}
-		for r[i] < n {
-			if a[r[i]+1]-a[i] <= k {
-				r[i] += 1
-			} else {
-				break
-			}
-		}
-
-		sum += r[i] - i
+	for i := range n {
+		b[i] = next()
 	}
-	out := bufio.NewWriter(os.Stdout)
-	defer out.Flush()
-	fmt.Fprintln(out, sum)
+
+	for i := range n {
+		c[i] = next()
+	}
+
+	for i := range n {
+		d[i] = next()
+	}
+	p := make([]int, n*n+1)
+	q := make([]int, n*n+1)
+	for i := range n {
+		for j := range n {
+			p = append(p, a[i]+b[j])
+			q = append(q, c[i]+d[j])
+		}
+	}
+	slices.Sort(q)
+	for _, v := range p {
+		// does q include k - v?
+		target := k - v
+		_, found := slices.BinarySearch(q, target)
+		if found {
+			fmt.Println("Yes")
+			return
+		}
+	}
+	fmt.Println("No")
 }
