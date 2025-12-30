@@ -7,14 +7,6 @@ import (
 	"strconv"
 )
 
-func question(a []int, t int, k int, n int) bool {
-	sum := 0
-	for i := 1; i <= n; i++ {
-		sum += t / a[i]
-	}
-	return sum >= k
-}
-
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Split(bufio.ScanWords)
@@ -28,17 +20,26 @@ func main() {
 	for i := 1; i <= n; i++ {
 		a[i] = next()
 	}
-	left := 1
-	right := 1000000000
-	for right-left > 1 {
-		mid := (left + right) / 2
-		if question(a, mid, k, n) {
-			right = mid
+
+	r := make([]int, n+1)
+	sum := 0
+	for i := 1; i <= n-1; i++ {
+		if i == 1 {
+			r[i] = 1
 		} else {
-			left = mid
+			r[i] = r[i-1]
 		}
+		for r[i] < n {
+			if a[r[i]+1]-a[i] <= k {
+				r[i] += 1
+			} else {
+				break
+			}
+		}
+
+		sum += r[i] - i
 	}
 	out := bufio.NewWriter(os.Stdout)
 	defer out.Flush()
-	fmt.Fprintln(out, right)
+	fmt.Fprintln(out, sum)
 }
