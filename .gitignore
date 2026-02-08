@@ -1,3 +1,2 @@
-/target
-main
-
+.venv/
+__pycache__/
