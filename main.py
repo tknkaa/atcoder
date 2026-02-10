@@ -1,4 +1,5 @@
-from typing import List
+from typing import Dict, List
+from collections import defaultdict
 
 
 def main():
@@ -15,12 +16,13 @@ def main():
         u[i] = u_i
         v[i] = v_i
         c[i] = c_i
+    graph: defaultdict[int, List[List[int]]] = defaultdict(list)
+    for i in range(0, m):
+        graph[u[i]].append([v[i], c[i]])
     ans: List[int] = []
-    config = Config(u, v, c, l, s, t)
     state = State(1, 0, 0, ans)
-    dfs(config, state)
-    unique_list = set(ans)
-    unique_ans = list(unique_list)
+    dfs(state, graph, l, s, t)
+    unique_ans = list(set(ans))
     unique_ans.sort()
     ans_str = ""
     for ele in unique_ans:
@@ -48,18 +50,9 @@ class State:
         self.ans = ans
 
 
-def find_neighbors_and_costs(current: int, config: Config) -> List[List[int]]:
-    # [[neighbor, cost], ...]
-    ans: List[List[int]] = []
-    for i in range(0, len(config.u)):
-        if config.u[i] == current:
-            ans.append([config.v[i], config.c[i]])
-    return ans
-
-
-def dfs(config: Config, state: State):
-    if state.total_edges < config.l:
-        neighbors = find_neighbors_and_costs(state.current, config)
+def dfs(state: State, graph: Dict[int, List[List[int]]], l: int, s: int, t: int):
+    if state.total_edges < l:
+        neighbors = graph[state.current]
         for neighbor in neighbors:
             neighbor_id = neighbor[0]
             neighbor_cost = neighbor[1]
@@ -69,8 +62,8 @@ def dfs(config: Config, state: State):
                 state.total_cost + neighbor_cost,
                 state.ans,
             )
-            dfs(config, next_state)
-    elif state.total_edges == config.l and config.s <= state.total_cost <= config.t:
+            dfs(next_state, graph, l, s, t)
+    elif state.total_edges == l and s <= state.total_cost <= t:
         state.ans.append(state.current)
         return
     else:
