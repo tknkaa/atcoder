@@ -20,26 +20,13 @@ def main():
     for i in range(0, m):
         graph[u[i]].append([v[i], c[i]])
     ans: List[int] = []
-    state = State(1, 0, 0, ans)
-    dfs(state, graph, l, s, t)
+    dfs(1, 0, 0, ans, graph, l, s, t)
     unique_ans = list(set(ans))
     unique_ans.sort()
     ans_str = ""
     for ele in unique_ans:
         ans_str = ans_str + str(ele) + " "
     print(ans_str)
-
-
-class Config:
-    def __init__(
-        self, u: List[int], v: List[int], c: List[int], l: int, s: int, t: int
-    ):
-        self.u = u
-        self.v = v
-        self.c = c
-        self.l = l
-        self.s = s
-        self.t = t
 
 
 class State:
@@ -50,21 +37,33 @@ class State:
         self.ans = ans
 
 
-def dfs(state: State, graph: Dict[int, List[List[int]]], l: int, s: int, t: int):
-    if state.total_edges < l:
-        neighbors = graph[state.current]
+def dfs(
+    current: int,
+    total_edges: int,
+    total_cost: int,
+    ans: List[int],
+    graph: Dict[int, List[List[int]]],
+    l: int,
+    s: int,
+    t: int,
+):
+    if total_edges < l:
+        neighbors = graph[current]
         for neighbor in neighbors:
             neighbor_id = neighbor[0]
             neighbor_cost = neighbor[1]
-            next_state = State(
+            dfs(
                 neighbor_id,
-                state.total_edges + 1,
-                state.total_cost + neighbor_cost,
-                state.ans,
+                total_edges + 1,
+                total_cost + neighbor_cost,
+                ans,
+                graph,
+                l,
+                s,
+                t,
             )
-            dfs(next_state, graph, l, s, t)
-    elif state.total_edges == l and s <= state.total_cost <= t:
-        state.ans.append(state.current)
+    elif total_edges == l and s <= total_cost <= t:
+        ans.append(current)
         return
     else:
         return
