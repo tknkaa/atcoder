@@ -1,72 +1,34 @@
-from typing import Dict, List
-from collections import defaultdict
+from typing import List
 
 
 def main():
-    # n vertices, m edges
-    # traverse l edges
-    # the sum of the costs of the traversed edges is at least S and at most t
-    [_, m, l, s, t] = list(map(int, input().split(" ")))
-    # vertex u_i to v_i with cost c_i
-    u = [0] * m
-    v = [0] * m
-    c = [0] * m
-    for i in range(0, m):
-        [u_i, v_i, c_i] = list(map(int, input().split(" ")))
-        u[i] = u_i
-        v[i] = v_i
-        c[i] = c_i
-    graph: defaultdict[int, List[List[int]]] = defaultdict(list)
-    for i in range(0, m):
-        graph[u[i]].append([v[i], c[i]])
-    ans: List[int] = []
-    dfs(1, 0, 0, ans, graph, l, s, t)
-    unique_ans = list(set(ans))
-    unique_ans.sort()
-    ans_str = ""
-    for ele in unique_ans:
-        ans_str = ans_str + str(ele) + " "
-    print(ans_str)
+    t = int(input())
+    min_costs = [0] * t
+    for i in range(0, t):
+        [n, w] = list(map(int, input().split(" ")))
+        c = list(map(int, input().split(" ")))
+        min_costs[i] = min_cost(n, w, c)
+    for cost in min_costs:
+        print(cost)
 
 
-class State:
-    def __init__(self, current: int, total_edges: int, total_cost: int, ans: List[int]):
-        self.current = current
-        self.total_edges = total_edges
-        self.total_cost = total_cost
-        self.ans = ans
+def min_cost(n: int, w: int, c: List[int]) -> int:
+    circle = [0] * (2 * w)
+    cycles = int(n / (2 * w))
+    for x in range(0, 2 * w):
+        for i in range(0, cycles + 1):
+            if x + i * 2 * w >= n:
+                continue
+            else:
+                circle[x] += c[x + i * 2 * w]
+    circle = circle * 3
+    sums = [0] * (2 * w)
 
-
-def dfs(
-    current: int,
-    total_edges: int,
-    total_cost: int,
-    ans: List[int],
-    graph: Dict[int, List[List[int]]],
-    l: int,
-    s: int,
-    t: int,
-):
-    if total_edges < l:
-        neighbors = graph[current]
-        for neighbor in neighbors:
-            neighbor_id = neighbor[0]
-            neighbor_cost = neighbor[1]
-            dfs(
-                neighbor_id,
-                total_edges + 1,
-                total_cost + neighbor_cost,
-                ans,
-                graph,
-                l,
-                s,
-                t,
-            )
-    elif total_edges == l and s <= total_cost <= t:
-        ans.append(current)
-        return
-    else:
-        return
+    current_sum = sum(circle[0:w])
+    for start in range(0, 2 * w):
+        current_sum = current_sum - circle[start] + circle[start + w]
+        sums[start] = current_sum
+    return min(sums)
 
 
 if __name__ == "__main__":
