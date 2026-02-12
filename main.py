@@ -1,4 +1,5 @@
 from typing import List
+from bisect import bisect_left
 
 
 def main():
@@ -19,15 +20,7 @@ def main():
 
 
 def find_s(a: List[int], x: int) -> int:
-    ng = -1
-    ok = len(a)
-    while ok - ng > 1:
-        mid = (ok + ng) // 2
-        if a[mid] >= x:
-            ok = mid
-        else:
-            ng = mid
-    return ok
+    return bisect_left(a, x)
 
 
 def find_t(a: List[int], x: int, y: int) -> int:
