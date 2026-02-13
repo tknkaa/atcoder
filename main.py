@@ -1,32 +1,16 @@
-import math
-
-
 def main():
     n = int(input())
-    max = int(math.sqrt(n))
-    ans = []
-    for i in range(1, max + 1):
-        for j in range(i + 1, max + 1):
-            sum = i**2 + j**2
-            if sum <= n:
-                ans.append(sum)
-
-    ans.sort()
-    check_list = []
-    duplicates = []
-    for a in ans:
-        if a not in check_list:
-            check_list.append(a)
-        else:
-            duplicates.append(a)
-
-    ans = [a for a in ans if a not in duplicates]
-
+    c = [0] * (n + 1)
+    x = 1
+    while x**2 <= n:
+        y = x + 1
+        while x**2 + y**2 <= n:
+            c[x**2 + y**2] += 1
+            y += 1
+        x += 1
+    ans = [i for i in range(1, len(c)) if c[i] == 1]
     print(len(ans))
-    ans_str = ""
-    for a in ans:
-        ans_str = ans_str + str(a) + " "
-    print(ans_str.strip())
+    print(" ".join(map(str, ans)))
 
 
 if __name__ == "__main__":
