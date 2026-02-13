@@ -1,69 +1,86 @@
-from typing import List, Tuple
+from typing import Dict, List
+from collections import defaultdict
 
 
 def main():
     _ = int(input())
     a = list(map(int, input().split()))
-    indexed = [(i, e) for (i, e) in enumerate(a)]
-    ordered = sorted(indexed, key=lambda x: x[1])
-    count = 0
-    answers: List[List[Tuple[int, int]]] = []
-    for k_new, k in enumerate(ordered):
-        v = k[1]
-        if v % 3 == 0:
-            if k_new + 1 >= len(ordered):
-                continue
-            remain = ordered[(k_new + 1) :]
-            target = int(v / 3 * 5)
-            founds = bin_search(remain, target)
-            if len(founds) == 0:
-                continue
+    t_to_ijk: Dict[int, List[List[int]]] = defaultdict()
+    for l, a_l in enumerate(a):
+        if a_l % 7 == 0:
+            t = int(a_l / 7)
+            if t not in t_to_ijk.keys():
+                t_to_ijk[t] = [[l], [], []]
             else:
-                for found in founds:
-                    j_new = found + k_new + 1
-                    j = ordered[j_new]
-                    if j_new + 1 >= len(ordered):
-                        break
-                    remain = ordered[(j_new + 1) :]
-                    target = int(v / 3 * 7)
-                    founds = bin_search(remain, target)
-                    if len(founds) == 0:
-                        break
-                    else:
-                        for found in founds:
-                            i_new = found + j_new + 1
-                            i = ordered[i_new]
-                            k_idx = k[0]
-                            j_idx = j[0]
-                            i_idx = i[0]
-                            if (
-                                min([k_idx, j_idx, i_idx]) == j_idx
-                                or max([k_idx, j_idx, i_idx]) == j_idx
-                            ):
-                                count += 1
-                                answers.append([k, j, i])
-        else:
-            continue
+                t_to_ijk[t][0].append(l)
+
+        if a_l % 5 == 0:
+            t = int(a_l / 5)
+            if t not in t_to_ijk.keys():
+                t_to_ijk[t] = [[], [l], []]
+            else:
+                t_to_ijk[t][1].append(l)
+
+        if a_l % 3 == 0:
+            t = int(a_l / 3)
+            if t not in t_to_ijk.keys():
+                t_to_ijk[t] = [[], [], [l]]
+            else:
+                t_to_ijk[t][2].append(l)
+
+    count = 0
+    for t in t_to_ijk.keys():
+        i_candidates = sorted(t_to_ijk[t][0])
+        j_candidates = sorted(t_to_ijk[t][1])
+        k_candidates = sorted(t_to_ijk[t][2])
+
+        num_of_i_candidates = len(i_candidates)
+        num_of_j_candidates = len(j_candidates)
+        num_of_k_candidates = len(k_candidates)
+
+        count += num_of_i_candidates * num_of_j_candidates * num_of_k_candidates
+        for j_candidate in t_to_ijk[t][1]:
+            num_of_i_less_than_j = num_of_less_than_target(i_candidates, j_candidate)
+
+            num_of_k_more_than_j = num_of_more_than_target(k_candidates, j_candidate)
+
+            delta0 = num_of_i_less_than_j * num_of_k_more_than_j
+            num_of_i_more_than_j = num_of_more_than_target(i_candidates, j_candidate)
+
+            num_of_k_less_than_j = num_of_less_than_target(k_candidates, j_candidate)
+            delta1 = num_of_i_more_than_j * num_of_k_less_than_j
+
+            count = count - delta0 - delta1
+
     print(count)
-    # print(answers)
 
 
-def bin_search(remain: List[Tuple[int, int]], target: int) -> List[int]:
+def num_of_less_than_target(candidates: List[int], target: int) -> int:
     ng = -1
-    ok = len(remain)
-    ans = []
+    ok = len(candidates)
+
     while ok - ng > 1:
-        mid = (ng + ok) // 2
-        if remain[mid][1] >= target:
+        mid = (ok + ng) // 2
+        if candidates[mid] >= target:
             ok = mid
         else:
             ng = mid
-    if ok >= len(remain) or remain[ok][1] != target:
-        return ans
-    while ok <= len(remain) - 1 and remain[ok][1] == target:
-        ans.append(ok)
-        ok += 1
-    return ans
+    # 0...(ok - 1)
+    return ok
+
+
+def num_of_more_than_target(candidates: List[int], target: int) -> int:
+    ng = -1
+    ok = len(candidates)
+    while ok - ng > 1:
+        mid = (ok + ng) // 2
+        if candidates[mid] > target:
+            ok = mid
+        else:
+            ng = mid
+
+    # ok...len(candidates) - 1
+    return len(candidates) - ok
 
 
 if __name__ == "__main__":
