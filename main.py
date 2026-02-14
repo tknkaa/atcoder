@@ -7,17 +7,17 @@ def main():
     q: List[int] = []
     for a_i in a:
         q.append(a_i)
-        q = delete_tail(q)
+        delete_tail(q)
 
     print(len(q))
 
 
-def delete_tail(q: List[int]) -> List[int]:
+def delete_tail(q: List[int]) -> None:
     if len(q) < 4:
-        return q
+        return
     if q[len(q) - 4] == q[len(q) - 3] == q[len(q) - 2] == q[len(q) - 1]:
-        return q[: len(q) - 4]
-    return q
+        for _ in range(4):
+            q.pop()
 
 
 if __name__ == "__main__":
