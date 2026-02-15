@@ -20,7 +20,15 @@ def main():
 
 
 def solve(w: List[int], p: List[int]) -> int:
-    return 0
+    sum_p = sum(p)
+    w_plus_p = [w[i] + p[i] for i in range(0, len(w))]
+    w_plus_p.sort()
+    sum_w_plus_p = 0
+    num_of_deer = 0
+    while sum_w_plus_p <= sum_p:
+        sum_w_plus_p += w_plus_p[num_of_deer]
+        num_of_deer += 1
+    return num_of_deer - 1
 
 
 if __name__ == "__main__":
