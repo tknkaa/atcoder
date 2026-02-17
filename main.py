@@ -2,33 +2,36 @@ from typing import List
 
 
 def main():
-    t = int(input())
-    answers: List[int] = []
-    for _ in range(0, t):
-        n = int(input())
-        w: List[int] = []
-        p: List[int] = []
-        for _ in range(0, n):
-            [w_i, p_i] = list(map(int, input().split()))
-            w.append(w_i)
-            p.append(p_i)
-        answer = solve(w, p)
-        answers.append(answer)
+    n, m = map(int, input().split())
+    a = list(map(int, input().split()))
+    b = list(map(int, input().split()))
+    c = 998244353
+    a.sort()
 
-    for answer in answers:
-        print(answer)
+    # Prefix sum: prefix[i] = sum of a[0..i-1]
+    prefix = [0] * (n + 1)
+    for i in range(n):
+        prefix[i + 1] = prefix[i] + a[i]
+
+    result = 0
+    for j in range(m):
+        x = find_x(b[j], a)
+        result += (b[j] * x - prefix[x]) % c
+        result += ((prefix[n] - prefix[x]) - b[j] * (n - x)) % c
+    result %= c
+    print(result)
 
 
-def solve(w: List[int], p: List[int]) -> int:
-    sum_p = sum(p)
-    w_plus_p = [w[i] + p[i] for i in range(0, len(w))]
-    w_plus_p.sort()
-    sum_w_plus_p = 0
-    num_of_deer = 0
-    while sum_w_plus_p <= sum_p:
-        sum_w_plus_p += w_plus_p[num_of_deer]
-        num_of_deer += 1
-    return num_of_deer - 1
+def find_x(b_j: int, a: List[int]) -> int:
+    ng = -1
+    ok = len(a)
+    while ok - ng > 1:
+        mid = (ok + ng) // 2
+        if a[mid] >= b_j:
+            ok = mid
+        else:
+            ng = mid
+    return ok
 
 
 if __name__ == "__main__":
